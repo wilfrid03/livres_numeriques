@@ -26,7 +26,7 @@ while (i != 10){
 
 ## ouvrir un jeu de données :
 
-popCom3608 <- read.csv("./RetEspace_Donnees/PopCom3608.csv", sep=";", encoding="utf-8", stringsAsFactors=FALSE)
+popCom3608 <- read.csv(".\\RetEspace_Donnees\\PopCom3608.csv", sep=";", encoding="utf-8", stringsAsFactors=FALSE)
 
 socEco9907 <- read.csv(".\\RetEspace_Donnees\\socEco9907.csv", sep=";", encoding="utf-8", stringsAsFactors=FALSE)
 
@@ -87,7 +87,12 @@ dim(df_distAB) ## 20306 3 attendu
 ## utilisées pour éviter de répéter du code
 ## elles peuvent être mises à disposition d'autre utilisateur
 ## souvent dans le cas d'usage générique
-## rarement propre à un cas
+## rarement propre à un cas.
+
+## les fonctions peuvent admettre 0 ou plusieurs paramètres.
+## Lorsqu'un argument n'est pas indiqué, R va rechercher cet arg dans l'env global
+## Il faut donc faire attention au nommage pour éviter toutes mauvaises surprises ...
+
 
 ## exemple :
 fn <- function(a, b){
@@ -233,9 +238,104 @@ plot(
 ## Dans cet exemple, la valeur qui satisfait l’équilibre de Wardrop est de
 ##+ 2 000 véhicules sur chacune des deux routes.
 
-## p67
+## ---- VOL DE SYRACUSE
+
+## définition : quand une valeur est paire, elle est divisée par deux
+##+ quand une valeur est impaire, elle est multipliée par 3, puis +1
+
+## normalement on fini par tomber sur 1.
+## on va implémenter cet algo (pour faire des conditions et des boucles) :
+## cet algo recherche à atteindre 1 depuis une valeur quelconque.
+
+syracuse <- function(nb){
+	## nb : une valeur numérique à ajouter à uneséquence initialisée
+	## la séquence qui va contenir nos valeurs :
+	syr <- nb ## on crée un vecteur
+	
+	i <- 1
+	while (syr[i] != 1){
+		if (syr[i] %% 2 == 0){
+			syr[i + 1] <- syr[i] / 2
+		} else if (syr[i] %% 2 != 0){
+			syr[i + 1] <- 3 * syr[i] + 1
+		}
+		i <- i + 1
+		
+	}
+	return(syr)
+}
+
+## Maintenant, il faut connaître le nombre de coups :
+dureeSyr <- function(n, fct){
+	## en gros, on va créer une fonction qui va lancer une fonction
+	##+ et quand celle-ci est résolue, afficher la longueur du vecteur crée
+	length(fct(n))
+
+}
 
 
+## le vol de Syracuse c'est justement la longueur du vecteur (le nb de coups
+##+ pour atteindre la valeur 1).
+
+## Là on va appliquer le vol de Syracuse
+##+ au df de la popualtion communale 2008
+## On va donc voir s'il existe un lien entre la taille de la
+##+ population et la durée du vol :
+
+## on utilisera apply()
+val <- popCom3608$POP2008
+syr_dur <- sapply(val,
+			dureeSyr,
+			fct=syracuse,
+			simplify=TRUE)
+plot(val, syr_dur, pch=19, xlab="Population communale", ylab="Durée de vol de Syracuse")
+
+## finalement, pas de lien apparent entre la valeur de départ et 
+##+ la durée du vol.
+
+max(syr_dur)
+## afficher la commune avec le plus d'itération :
+popCom3608$LIBELLE[which.max(syr_dur)]
+
+## Afficher le vol de syracuse d'une commune :
+plot(syracuse(val[which.max(syr_dur)]),
+	type="l",
+	log="y",
+	xlab="nb d'essai",
+	ylab="u_n"
+	)
+
+## ----- APPLICATION DE FONCTIONS SUR DES ENSEMBLES
+## précédemment on a appliqué des fonctions
+##+ sur des ensembles pour produire des résumés
+##+ numériques selon une variables d'aggrégation.
+## Toutes les fonctions de la famille apply()
+##+ ne servent pas qu'à produire ce genre de résumé.
+##+ dans cette partie, on va regarder quelques fonctions
+##+ de la famille apply().
+
+## le fonctionnement :
+## - inspirées du paradigme de la prog fonctionnelle
+##+ qui fonctionne à l'origine sur des ensembles.
+## - plus rapide et moins gourmande en ressource que les boucles
+## - retourne un type matrix/array. Si df, 
+##+ alors l'objet est transformé.
+## - contrairement aux boucles, possibilité d'être
+##+ exécutées en parallèle (notamment avec les pkg
+parallel et multicore).
+
+## syntaxe générale :
+## apply(tab, dimensions, fonction)
+## avec :
+## - tab : matrix, array ou df (transformé automatiquement)
+## - dimensions : la dimension sur laquelle doit être appliquée 
+##+ la fonction. Soit 1 = ligne, 2 = colonne (pour un tab en 2D).
+##+ on peut dépasser la 2e dimension si nécessaire.
+## - fonction : la fonction qui va être appliquée. Elle peut
+##+ être native, ou bien créer par l'utilisateur.
+## exemple :
+sumPop <- apply(popCom3608[ , 3:11], 2, sum)
+sumPop
 
 
 
