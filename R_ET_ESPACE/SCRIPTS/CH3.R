@@ -1,6 +1,17 @@
 ## R et espace
 ## CH 3 : introduction à la programmation
 
+## ----- OBJECTIFS DU CHAPITRE
+## - utiliser et créer des fonctions.
+## - utiliser les boucles.
+## - utiliser les fonctions de la famille apply()
+##+ pour gagner en efficacité.
+## - faire des représentations graphiques (mono, multigraphiques).
+## - calculer la distance entre deux communes, dans un ensemble
+##+ de communes.
+## - utiliser l'équilibre de Wardrop.
+## - appeler le test de shapiro.
+
 ## Définir l'espace de travail :
 setwd("C:\\Users\\will\\Documents\\GitHub\\livres_numeriques\\R_ET_ESPACE")
 
@@ -33,7 +44,8 @@ socEco9907 <- read.csv(".\\RetEspace_Donnees\\socEco9907.csv", sep=";", encoding
 ## le fichier n'est pas construit pour être lu par read.table()
 
 ## Afficher des graphiques pour chaque colonne :
-## on va afficher 9 graphiques ont doit donc découper la zone d'affichage en 9 (3*3)
+## on va afficher 9 graphiques ont doit donc découper la zone d'affichage 
+##+ en 9 (3*3)
 par(mfrow=c(3,3)) ## découpage en 3x3
 for (i in 3:11){
 	popAnnee <- colnames(popCom3608) ## permet d'avoir les noms des colonnes
@@ -57,6 +69,7 @@ dist_ab <- c()
 
 k <- 1 ## la valeur qui compte et indice les vecteurs :
 ## bien indiquer les parenthèses !
+## calculer la distance entre chaque commune :
 for (i in 1:(nrow(socEco9907) - 1) ){ 
 	for (j in i+1:nrow(socEco9907)){
 		com_a[k] <- socEco9907$NOM[i]
@@ -337,7 +350,17 @@ parallel et multicore).
 sumPop <- apply(popCom3608[ , 3:11], 2, sum)
 sumPop
 
-
+## ----- A LA FIN DE CE CHAPITRE JE SAIS
+## ----- OBJECTIFS DU CHAPITRE
+## - utiliser et créer des fonctions.
+## - utiliser les boucles.
+## - utiliser les fonctions de la famille apply()
+##+ pour gagner en efficacité.
+## - faire des représentations graphiques (mono, multigraphiques).
+## - calculer la distance entre deux communes, dans un ensemble
+##+ de communes.
+## - utiliser l'équilibre de Wardrop.
+## - appeler le test de shapiro.
 
 
 
